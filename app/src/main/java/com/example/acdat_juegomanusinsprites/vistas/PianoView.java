@@ -19,17 +19,20 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
     private HiloTecla hiloTecla;
     private ArrayList<TeclaPiano> teclas;
     private int figuraActiva;
-    private int iniX, iniY, iniBase, iniAltura;
+    private int iniX, iniY, iniBase, iniAltura, anchoPantalla, altoPantalla;
+    private final int FILAS_TECLAS = 4, COLUMNAS_TECLAS = 7;
 
     public PianoView(Context context) {
         super(context);
 
         //hacer que se divida el width de la pantalla entre 4 para poder poner cuánto mide la base de las teclas, además también para poder saber en qué cuatro sitios podemos hacer aparecer las teclas en la pantalla, y lo mismo con el height para dividirlo entre 7 o así más o menos y poder poner la altura de la tecla acorde a cualquier pantalla
         figuraActiva = -1;
-        iniX = 0;
-        iniY = 0;
-        iniBase = 0;
-        iniAltura = 0;
+        anchoPantalla = getResources().getDisplayMetrics().widthPixels;
+        altoPantalla = getResources().getDisplayMetrics().heightPixels;
+        iniX = iniBase * (int)(Math.random() * FILAS_TECLAS);
+        iniY = 0 - iniAltura;
+        iniBase = anchoPantalla / FILAS_TECLAS;
+        iniAltura = altoPantalla / COLUMNAS_TECLAS;
 
         getHolder().addCallback(this);
         setBackgroundColor(Color.WHITE);
@@ -40,8 +43,8 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
         int id = 0;
 
         teclas = new ArrayList<TeclaPiano>();
-        teclas.add(new TeclaPiano(iniX, iniY, 200,100));
-        teclas.add(new TeclaPiano(iniX, iniY, 500, 200));
+        teclas.add(new TeclaPiano(iniX, iniY, iniBase,altoPantalla));
+        teclas.add(new TeclaPiano(iniX, iniY, iniBase, altoPantalla));
 
         hiloTecla = new HiloTecla(this);
         hiloTecla.setRunning(true);
