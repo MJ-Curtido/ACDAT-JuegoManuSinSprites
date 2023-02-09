@@ -3,98 +3,37 @@ package com.example.acdat_juegomanusinsprites.clases;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import com.example.acdat_juegomanusinsprites.vistas.PianoView;
+
 import java.util.Objects;
 
 public class TeclaPiano {
     private double base, altura, posX, posY;
-    protected int id;
+    protected int id, ySpeed;;
     private static int idTemp;
     protected Paint paint;
-    private boolean mover;
+    private final double POS_X_INI, POS_Y_INI;
+    private PianoView pianoView;
 
-    public TeclaPiano(double posX, double posY, double base, double altura) {
+    public TeclaPiano(double posX, double posY, double base, double altura, PianoView pianoView) {
         this.id = idTemp;
         this.posX = posX;
         this.posY = posY;
+        POS_X_INI = posX;
+        POS_Y_INI = posY;
         this.paint = new Paint();
         this.paint.setAntiAlias(true);
         this.base = base;
         this.altura = altura;
+        this.pianoView = pianoView;
         this.idTemp++;
+        this.ySpeed = 30;
     }
 
-    public TeclaPiano(double posX, double posY, boolean mover, double base, double altura) {
-        this.id = idTemp;
-        this.posX = posX;
-        this.posY = posY;
-        this.paint = new Paint();
-        this.paint.setAntiAlias(true);
-        this.base = base;
-        this.altura = altura;
-        this.idTemp++;
-        this.mover = mover;
-    }
-
-    public float getBase() {
-        return (float) base;
-    }
-
-    public void setBase(double base) {
-        this.base = base;
-    }
-
-    public float getAltura() {
-        return (float) altura;
-    }
-
-    public void setAltura(double altura) {
-        this.altura = altura;
-    }
-
-    public float getPosX() {
-        return (float) posX;
-    }
-
-    public void setPosX(double posX) {
-        this.posX = posX;
-    }
-
-    public float getPosY() {
-        return (float) posY;
-    }
-
-    public void setPosY(double posY) {
-        this.posY = posY;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Paint getPaint() {
-        return paint;
-    }
-
-    public void setPaint(Paint paint) {
-        this.paint = paint;
-    }
-
-    public boolean isMover() {
-        return mover;
-    }
-
-    public void setMover(boolean mover) {
-        this.mover = mover;
-    }
-
-    public Boolean isTouched(int x, int y) {
+    public Boolean isTouched(float x, float y) {
         Boolean dentro = false;
 
-        if(x > getPosX() && x < (getPosX() + getBase()) && y > getPosY() && y < (getPosY() + getAltura())) {
+        if(x > posX && x < (posX + base) && y > posY && y < (posY + altura)) {
             dentro = true;
         }
 
@@ -102,28 +41,35 @@ public class TeclaPiano {
     }
 
     public void onDraw(Canvas canvas) {
-        canvas.drawRect(getPosX(), getPosY(), getPosX() + getBase(), getPosY() + getAltura(), getPaint());
+        canvas.drawRect((float) posX, (float)  posY, (float)  posX + (float)  base, (float)  posY + (float)  altura, paint);
     }
 
     public void setPositionUpdated(int x, int y){
-        this.setPosX(this.getPosX() + x);
-        this.setPosY(this.getPosY() + y);
+        posX = posX + x;
+        posY = posY + y;
     }
 
     public boolean isHover(TeclaPiano t) {
-        double centroX = (getBase() / 2) + getPosX();
-        double centroY = (getAltura() / 2) + getPosY();
+        double centroX = (base / 2) + posX;
+        double centroY = (altura / 2) + posY;
 
-        double centroXR = (t.getBase() / 2) + t.getPosX();
-        double centroYR = (t.getAltura() / 2) + t.getPosY();
+        double centroXR = (t.base / 2) + t.posX;
+        double centroYR = (t.altura / 2) + t.posY;
 
         double distanciaPuntos = Math.sqrt(Math.pow(centroXR - centroX, 2) + Math.pow(centroYR - centroY, 2));
 
-        if(distanciaPuntos < (getBase() / 2) && getBase() == t.getBase() && getAltura() == t.getAltura()){
+        if(distanciaPuntos < (base / 2) && base == t.base && altura == t.altura){
             return true;
         }
 
         return false;
+    }
+
+    private void update(){
+        if(posY > pianoView.getHeight() - altura - ySpeed){
+            ySpeed = -ySpeed;
+        }
+        posY = posY + ySpeed;
     }
 
     @Override
@@ -148,7 +94,6 @@ public class TeclaPiano {
                 ", posY=" + posY +
                 ", id=" + id +
                 ", paint=" + paint +
-                ", mover=" + mover +
                 '}';
     }
 }

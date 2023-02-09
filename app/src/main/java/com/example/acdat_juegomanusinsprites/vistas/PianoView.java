@@ -25,7 +25,6 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
     public PianoView(Context context) {
         super(context);
 
-        //hacer que se divida el width de la pantalla entre 4 para poder poner cuánto mide la base de las teclas, además también para poder saber en qué cuatro sitios podemos hacer aparecer las teclas en la pantalla, y lo mismo con el height para dividirlo entre 7 o así más o menos y poder poner la altura de la tecla acorde a cualquier pantalla
         figuraActiva = -1;
         anchoPantalla = getResources().getDisplayMetrics().widthPixels;
         altoPantalla = getResources().getDisplayMetrics().heightPixels;
@@ -43,8 +42,6 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
         int id = 0;
 
         teclas = new ArrayList<TeclaPiano>();
-        teclas.add(new TeclaPiano(iniX, iniY, iniBase,altoPantalla));
-        teclas.add(new TeclaPiano(iniX, iniY, iniBase, altoPantalla));
 
         hiloTecla = new HiloTecla(this);
         hiloTecla.setRunning(true);
@@ -58,15 +55,7 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
-        boolean retry = true;
-        hiloTecla.setRunning(false);
 
-        while (retry){
-            try {
-                hiloTecla.join();
-                retry = false;
-            } catch (InterruptedException e) { e.printStackTrace(); }
-        }
     }
 
     @Override
@@ -81,32 +70,16 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
-        int x = (int) event.getX();
-        int y = (int) event.getY();
-
-        switch (event.getAction()){
-            case MotionEvent.ACTION_DOWN:
-                for (TeclaPiano t : teclas) {
-                    if (t.isTouched(x, y)) {
-                        figuraActiva = t.getId();
-                        iniX = (int) event.getX();
-                        iniY = (int) event.getY();
-                        Log.i("FiguraActiva", "ID: " + figuraActiva);
-                    }
+        synchronized (teclas){
+            for(int i = teclas.size() - 1; i >= 0; i--){
+                TeclaPiano tecla = teclas.get(i);
+                if(tecla.isTouched(event.getX(), event.getY())){
+                    teclas.remove(tecla);
+                    return false;
                 }
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if(figuraActiva != -1){
-                    teclas.get(figuraActiva).setPositionUpdated(x - iniX, y - iniY);
-                    iniX = (int) event.getX();
-                    iniY = (int) event.getY();
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                figuraActiva = -1;
+            }
         }
 
-        return true;
+        return false;
     }
 }
