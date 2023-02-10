@@ -65,7 +65,7 @@ public class TeclaPiano {
         return false;
     }
 
-    private void update(){
+    public void update(){
         if(posY > pianoView.getHeight() - altura - ySpeed){
             ySpeed = -ySpeed;
         }

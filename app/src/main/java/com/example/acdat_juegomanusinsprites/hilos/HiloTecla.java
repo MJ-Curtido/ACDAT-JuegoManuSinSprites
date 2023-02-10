@@ -1,40 +1,35 @@
 package com.example.acdat_juegomanusinsprites.hilos;
 
-import android.graphics.Canvas;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import com.example.acdat_juegomanusinsprites.clases.TeclaPiano;
 
 public class HiloTecla extends Thread {
-    private SurfaceHolder sh;
-    private SurfaceView view;
-    private  boolean run;
+    private TeclaPiano teclaPiano;
+    private long tiempoDeUpdate;
+    private int cont;
 
-    public HiloTecla(SurfaceView view) {
-        this.sh = view.getHolder();
-        this.view = view;
-        run = false;
-    }
+    public HiloTecla(TeclaPiano teclaPiano) {
+        this.teclaPiano = teclaPiano;
 
-    public void setRunning(boolean run) {
-        this.run = run;
+        tiempoDeUpdate = 20;
+        cont = 0;
     }
 
     @Override
     public void run() {
-        Canvas canvas;
+        try {
+            while (true){
+                cont++;
+                Thread.sleep(tiempoDeUpdate);
 
-        while (run){
-            canvas = null;
-            try {
-                canvas = sh.lockCanvas(null);
-                if(canvas != null) {
-                    synchronized (sh) {
-                        view.postInvalidate();
-                    }
+                teclaPiano.update();
+
+                if (cont == 1000) {
+                    cont = 0;
+                    tiempoDeUpdate--;
                 }
-            } finally {
-                if (canvas != null) sh.unlockCanvasAndPost(canvas);
             }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

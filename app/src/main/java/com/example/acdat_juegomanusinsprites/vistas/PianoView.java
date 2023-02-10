@@ -3,7 +3,6 @@ package com.example.acdat_juegomanusinsprites.vistas;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -11,11 +10,13 @@ import android.view.SurfaceView;
 import androidx.annotation.NonNull;
 
 import com.example.acdat_juegomanusinsprites.clases.TeclaPiano;
+import com.example.acdat_juegomanusinsprites.hilos.HiloPiano;
 import com.example.acdat_juegomanusinsprites.hilos.HiloTecla;
 
 import java.util.ArrayList;
 
 public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
+    private HiloPiano hiloPiano;
     private HiloTecla hiloTecla;
     private ArrayList<TeclaPiano> teclas;
     private int figuraActiva;
@@ -37,15 +38,21 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
         setBackgroundColor(Color.WHITE);
     }
 
+    public void crearTecla() {
+        teclas.add(new TeclaPiano(iniX, iniY, iniBase, iniAltura, this));
+        HiloTecla hilo = new HiloTecla(teclas.get(teclas.size()-1));
+        hilo.start();
+    }
+
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
         int id = 0;
 
         teclas = new ArrayList<TeclaPiano>();
 
-        hiloTecla = new HiloTecla(this);
-        hiloTecla.setRunning(true);
-        hiloTecla.start();
+        hiloPiano = new HiloPiano(this);
+        hiloPiano.setRunning(true);
+        hiloPiano.start();
     }
 
     @Override
