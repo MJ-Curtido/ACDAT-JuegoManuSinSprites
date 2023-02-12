@@ -3,6 +3,7 @@ package com.example.acdat_juegomanusinsprites.vistas;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,30 +18,48 @@ import java.util.ArrayList;
 
 public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
     private HiloPiano hiloPiano;
-    private HiloTecla hiloTecla;
     private ArrayList<TeclaPiano> teclas;
-    private int figuraActiva;
-    private int iniX, iniY, iniBase, iniAltura, anchoPantalla, altoPantalla;
-    private final int FILAS_TECLAS = 4, COLUMNAS_TECLAS = 7;
+    private ArrayList<HiloTecla> hilos;
+    private int iniBase, iniAltura, anchoPantalla, altoPantalla;
+    public final int FILAS_TECLAS = 4, COLUMNAS_TECLAS = 7, Y_SPEED_FIN = 50;;
+    private int contNuevaTecla, contPiezas;
+    private double limitNuevaTecla;
 
     public PianoView(Context context) {
         super(context);
 
-        figuraActiva = -1;
         anchoPantalla = getResources().getDisplayMetrics().widthPixels;
         altoPantalla = getResources().getDisplayMetrics().heightPixels;
-        iniX = iniBase * (int)(Math.random() * FILAS_TECLAS);
-        iniY = 0 - iniAltura;
         iniBase = anchoPantalla / FILAS_TECLAS;
         iniAltura = altoPantalla / COLUMNAS_TECLAS;
+        contNuevaTecla = -3;
+        limitNuevaTecla = 5;
+        contPiezas = 0;
 
         getHolder().addCallback(this);
         setBackgroundColor(Color.WHITE);
     }
 
+    public int getIniBase() {
+        return iniBase;
+    }
+
+    public int getIniAltura() {
+        return iniAltura;
+    }
+
+    public int getContPiezas() {
+        return contPiezas;
+    }
+
+    public int getAltoPantalla() {
+        return altoPantalla;
+    }
+
     public void crearTecla() {
-        teclas.add(new TeclaPiano(iniX, iniY, iniBase, iniAltura, this));
+        teclas.add(new TeclaPiano(iniBase, iniAltura, this));
         HiloTecla hilo = new HiloTecla(teclas.get(teclas.size()-1));
+        hilos.add(hilo);
         hilo.start();
     }
 
@@ -49,6 +68,9 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
         int id = 0;
 
         teclas = new ArrayList<TeclaPiano>();
+        hilos = new ArrayList<HiloTecla>();
+
+        crearTecla();
 
         hiloPiano = new HiloPiano(this);
         hiloPiano.setRunning(true);
@@ -69,24 +91,61 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawColor(Color.WHITE);
+        TeclaPiano t;
 
-        TeclaPiano t = teclas.get(0);
-        t.onDraw(canvas);
+        for (int i = 0; i < teclas.size(); i++) {
+            t = teclas.get(i);
+            t.onDraw(canvas);
+        }
+
+        dibujarTablero(canvas);
+
+        if (contNuevaTecla <= limitNuevaTecla) {
+            contNuevaTecla++;
+        }
+        else {
+            contNuevaTecla = -3;
+
+            if (limitNuevaTecla > -2) {
+                limitNuevaTecla = limitNuevaTecla - 1;
+            }
+
+            contPiezas++;
+
+            crearTecla();
+        }
+    }
+
+    private void dibujarTablero(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.GRAY);
+
+        canvas.drawLine(iniBase, 0, iniBase, altoPantalla, paint);
+        canvas.drawLine((iniBase * 2), 0, (iniBase * 2), altoPantalla, paint);
+        canvas.drawLine((iniBase * 3), 0, (iniBase * 3), altoPantalla, paint);
+        canvas.drawLine(0, (altoPantalla - iniAltura - Y_SPEED_FIN), anchoPantalla, (altoPantalla - iniAltura - Y_SPEED_FIN), paint);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        synchronized (teclas){
-            for(int i = teclas.size() - 1; i >= 0; i--){
-                TeclaPiano tecla = teclas.get(i);
-                if(tecla.isTouched(event.getX(), event.getY())){
-                    teclas.remove(tecla);
-                    return false;
-                }
-            }
+        if(teclas.get(0).isTouched(event.getX(), event.getY())){
+            teclas.remove(0);
+            hilos.get(0).setRunning(false);
+            hilos.remove(0);
+        }
+        else {
+            pararJuego();
         }
 
         return false;
+    }
+
+    public void pararJuego() {
+        hiloPiano.setRunning(false);
+
+        for (int j = 0; j < hilos.size(); j++) {
+            hilos.get(j).setRunning(false);
+        }
     }
 }

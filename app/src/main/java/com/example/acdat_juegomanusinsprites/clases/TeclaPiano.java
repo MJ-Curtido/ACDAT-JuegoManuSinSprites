@@ -15,10 +15,10 @@ public class TeclaPiano {
     private final double POS_X_INI, POS_Y_INI;
     private PianoView pianoView;
 
-    public TeclaPiano(double posX, double posY, double base, double altura, PianoView pianoView) {
+    public TeclaPiano(double base, double altura, PianoView pianoView) {
         this.id = idTemp;
-        this.posX = posX;
-        this.posY = posY;
+        this.posX = pianoView.getIniBase() * (int)(Math.random() * pianoView.FILAS_TECLAS);
+        this.posY = 0 - pianoView.getIniAltura();
         POS_X_INI = posX;
         POS_Y_INI = posY;
         this.paint = new Paint();
@@ -27,7 +27,12 @@ public class TeclaPiano {
         this.altura = altura;
         this.pianoView = pianoView;
         this.idTemp++;
-        this.ySpeed = 30;
+        if ((20 + (pianoView.getContPiezas() / 4)) < pianoView.Y_SPEED_FIN) {
+            this.ySpeed = 20 + (pianoView.getContPiezas() / 4);
+        }
+        else {
+            this.ySpeed = pianoView.Y_SPEED_FIN;
+        }
     }
 
     public Boolean isTouched(float x, float y) {
@@ -44,30 +49,9 @@ public class TeclaPiano {
         canvas.drawRect((float) posX, (float)  posY, (float)  posX + (float)  base, (float)  posY + (float)  altura, paint);
     }
 
-    public void setPositionUpdated(int x, int y){
-        posX = posX + x;
-        posY = posY + y;
-    }
-
-    public boolean isHover(TeclaPiano t) {
-        double centroX = (base / 2) + posX;
-        double centroY = (altura / 2) + posY;
-
-        double centroXR = (t.base / 2) + t.posX;
-        double centroYR = (t.altura / 2) + t.posY;
-
-        double distanciaPuntos = Math.sqrt(Math.pow(centroXR - centroX, 2) + Math.pow(centroYR - centroY, 2));
-
-        if(distanciaPuntos < (base / 2) && base == t.base && altura == t.altura){
-            return true;
-        }
-
-        return false;
-    }
-
     public void update(){
-        if(posY > pianoView.getHeight() - altura - ySpeed){
-            ySpeed = -ySpeed;
+        if((posY + altura) > (pianoView.getAltoPantalla() - altura)) {
+            pianoView.pararJuego();
         }
         posY = posY + ySpeed;
     }

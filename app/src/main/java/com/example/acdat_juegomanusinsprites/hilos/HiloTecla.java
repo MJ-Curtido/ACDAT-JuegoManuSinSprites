@@ -6,18 +6,28 @@ public class HiloTecla extends Thread {
     private TeclaPiano teclaPiano;
     private long tiempoDeUpdate;
     private int cont;
+    boolean running;
 
     public HiloTecla(TeclaPiano teclaPiano) {
         this.teclaPiano = teclaPiano;
 
         tiempoDeUpdate = 20;
         cont = 0;
+        running = true;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 
     @Override
     public void run() {
         try {
-            while (true){
+            while (running){
                 cont++;
                 Thread.sleep(tiempoDeUpdate);
 
