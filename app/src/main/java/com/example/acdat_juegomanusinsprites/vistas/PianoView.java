@@ -1,6 +1,7 @@
 package com.example.acdat_juegomanusinsprites.vistas;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -24,7 +25,7 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
     public final int FILAS_TECLAS = 4, COLUMNAS_TECLAS = 7, Y_SPEED_FIN = 50;;
     private int contNuevaTecla, contPiezas, puntuacion;
     private double limitNuevaTecla;
-    private int jugando; //1: jugando       0: perdido       -1: empezar
+    private Boolean jugando;
 
     public PianoView(Context context) {
         super(context);
@@ -37,7 +38,7 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
         limitNuevaTecla = 5;
         contPiezas = 0;
         puntuacion = 0;
-        jugando = -1;
+        jugando = true;
 
         getHolder().addCallback(this);
         setBackgroundColor(Color.WHITE);
@@ -72,7 +73,7 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
 
         teclas = new ArrayList<TeclaPiano>();
         hilos = new ArrayList<HiloTecla>();
-        
+
         crearTecla();
 
         hiloPiano = new HiloPiano(this);
@@ -139,14 +140,19 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(teclas.get(0).isTouched(event.getX(), event.getY())){
-            teclas.remove(0);
-            hilos.get(0).setRunning(false);
-            hilos.remove(0);
-            puntuacion += 10;
+        if (jugando) {
+            if(teclas.get(0).isTouched(event.getX(), event.getY())){
+                teclas.remove(0);
+                hilos.get(0).setRunning(false);
+                hilos.remove(0);
+                puntuacion += 10;
+            }
+            else {
+                pararJuego();
+            }
         }
         else {
-            pararJuego();
+            //hacer que lleve a la pagina inicial y todos felices :)
         }
 
         return false;
