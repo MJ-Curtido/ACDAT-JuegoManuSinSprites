@@ -22,8 +22,9 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
     private ArrayList<HiloTecla> hilos;
     private int iniBase, iniAltura, anchoPantalla, altoPantalla;
     public final int FILAS_TECLAS = 4, COLUMNAS_TECLAS = 7, Y_SPEED_FIN = 50;;
-    private int contNuevaTecla, contPiezas;
+    private int contNuevaTecla, contPiezas, puntuacion;
     private double limitNuevaTecla;
+    private int jugando; //1: jugando       0: perdido       -1: empezar
 
     public PianoView(Context context) {
         super(context);
@@ -35,6 +36,8 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
         contNuevaTecla = -3;
         limitNuevaTecla = 5;
         contPiezas = 0;
+        puntuacion = 0;
+        jugando = -1;
 
         getHolder().addCallback(this);
         setBackgroundColor(Color.WHITE);
@@ -69,7 +72,7 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
 
         teclas = new ArrayList<TeclaPiano>();
         hilos = new ArrayList<HiloTecla>();
-
+        
         crearTecla();
 
         hiloPiano = new HiloPiano(this);
@@ -114,6 +117,13 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
 
             crearTecla();
         }
+
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.rgb(238, 130, 238));
+        paint.setTextSize(77);
+
+        canvas.drawText(puntuacion + "", ((anchoPantalla / 2) - 60), 70, paint);
     }
 
     private void dibujarTablero(Canvas canvas) {
@@ -133,6 +143,7 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
             teclas.remove(0);
             hilos.get(0).setRunning(false);
             hilos.remove(0);
+            puntuacion += 10;
         }
         else {
             pararJuego();
