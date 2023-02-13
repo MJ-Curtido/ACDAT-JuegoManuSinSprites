@@ -4,15 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".vistas.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <Button
+        android:id="@+id/btnJugar"
+        android:layout_width="204dp"
+        android:layout_height="82dp"
+        android:layout_marginStart="105dp"
+        android:layout_marginTop="170dp"
+        android:layout_marginEnd="105dp"
+        android:text="@string/btnJugar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/btnHistorialPartidas"
+        android:layout_width="204dp"
+        android:layout_height="82dp"
+        android:layout_marginStart="105dp"
+        android:layout_marginTop="75dp"
+        android:layout_marginEnd="105dp"
+        android:layout_marginBottom="75dp"
+        android:text="@string/btnHistorialPartidas"
+        app:layout_constraintBottom_toTopOf="@+id/btnSalir"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnJugar" />
+
+    <Button
+        android:id="@+id/btnSalir"
+        android:layout_width="204dp"
+        android:layout_height="82dp"
+        android:layout_marginStart="105dp"
+        android:layout_marginEnd="105dp"
+        android:layout_marginBottom="170dp"
+        android:text="@string/btnSalir"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

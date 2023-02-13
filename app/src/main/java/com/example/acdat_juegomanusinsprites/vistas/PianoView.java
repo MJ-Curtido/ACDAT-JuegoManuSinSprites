@@ -26,10 +26,12 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
     private int contNuevaTecla, contPiezas, puntuacion;
     private double limitNuevaTecla;
     private Boolean jugando;
+    private JuegoView juegoView;
 
-    public PianoView(Context context) {
+    public PianoView(Context context, JuegoView juegoView) {
         super(context);
 
+        this.juegoView = juegoView;
         anchoPantalla = getResources().getDisplayMetrics().widthPixels;
         altoPantalla = getResources().getDisplayMetrics().heightPixels;
         iniBase = anchoPantalla / FILAS_TECLAS;
@@ -152,7 +154,9 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
         else {
-            //hacer que lleve a la pagina inicial y todos felices :)
+            getContext().startActivity(new Intent(getContext(), MainActivity.class));
+
+            juegoView.finish();
         }
 
         return false;
