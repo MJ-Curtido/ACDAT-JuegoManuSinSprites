@@ -9,10 +9,6 @@ public class JuegoView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new PianoView(JuegoView.this, JuegoView.this));
-    }
-
-    public void salirJuego() {
-        finish();
+        setContentView(new PianoView(JuegoView.this));
     }
 }

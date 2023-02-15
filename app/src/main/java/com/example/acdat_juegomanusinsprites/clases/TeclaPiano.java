@@ -35,6 +35,14 @@ public class TeclaPiano {
         }
     }
 
+    public double getPosX() {
+        return posX;
+    }
+
+    public double getBase() {
+        return base;
+    }
+
     public Boolean isTouched(float x, float y) {
         Boolean dentro = false;
 

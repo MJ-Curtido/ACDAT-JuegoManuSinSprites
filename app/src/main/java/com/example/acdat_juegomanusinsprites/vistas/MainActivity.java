@@ -3,6 +3,7 @@ package com.example.acdat_juegomanusinsprites.vistas;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 
@@ -11,6 +12,7 @@ import com.example.acdat_juegomanusinsprites.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     ActivityMainBinding binding;
+    MediaPlayer mp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +21,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+
+        mp = MediaPlayer.create(this, R.raw.menu);
+        mp.setLooping(true);
+        mp.setVolume(0.5f, 0.5f);
+        mp.start();
 
         binding.btnJugar.setOnClickListener(this);
         binding.btnSalir.setOnClickListener(this);
@@ -29,13 +36,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnJugar:
-                startActivity(new Intent(this, PianoView.class));
+                mp.stop();
+                startActivity(new Intent(this, JuegoView.class));
+                finish();
                 break;
             case R.id.btnSalir:
+                mp.stop();
                 finish();
                 break;
             case R.id.btnHistorialPartidas:
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        mp.stop();
+        super.onBackPressed();
     }
 }

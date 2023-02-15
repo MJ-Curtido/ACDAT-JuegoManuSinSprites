@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 
+import com.example.acdat_juegomanusinsprites.R;
 import com.example.acdat_juegomanusinsprites.clases.TeclaPiano;
 import com.example.acdat_juegomanusinsprites.hilos.HiloPiano;
 import com.example.acdat_juegomanusinsprites.hilos.HiloTecla;
@@ -22,16 +25,22 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
     private ArrayList<TeclaPiano> teclas;
     private ArrayList<HiloTecla> hilos;
     private int iniBase, iniAltura, anchoPantalla, altoPantalla;
-    public final int FILAS_TECLAS = 4, COLUMNAS_TECLAS = 7, Y_SPEED_FIN = 50;;
+    public final int FILAS_TECLAS = 4, COLUMNAS_TECLAS = 7, Y_SPEED_FIN = 50;
     private int contNuevaTecla, contPiezas, puntuacion;
     private double limitNuevaTecla;
     private Boolean jugando;
-    private JuegoView juegoView;
+    private SoundPool soundPool;
+    private int idUno, idDos, idTres, idCuatro;
 
-    public PianoView(Context context, JuegoView juegoView) {
+    public PianoView(Context context) {
         super(context);
 
-        this.juegoView = juegoView;
+        soundPool = new SoundPool( 5, AudioManager.STREAM_MUSIC , 0);
+        idUno = soundPool.load(context, R.raw.uno, 0);
+        idDos = soundPool.load(context, R.raw.dos, 0);
+        idTres = soundPool.load(context, R.raw.tres, 0);
+        idCuatro = soundPool.load(context, R.raw.cuatro, 0);
+
         anchoPantalla = getResources().getDisplayMetrics().widthPixels;
         altoPantalla = getResources().getDisplayMetrics().heightPixels;
         iniBase = anchoPantalla / FILAS_TECLAS;
@@ -127,6 +136,11 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
         paint.setTextSize(77);
 
         canvas.drawText(puntuacion + "", ((anchoPantalla / 2) - 60), 70, paint);
+
+        if (!jugando) {
+            canvas.drawText("Has perdido :(", 250, (altoPantalla / 2), paint);
+            canvas.drawText("Pulse para volver", 100, ((altoPantalla / 2) + 60), paint);
+        }
     }
 
     private void dibujarTablero(Canvas canvas) {
@@ -144,6 +158,18 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) {
         if (jugando) {
             if(teclas.get(0).isTouched(event.getX(), event.getY())){
+                if ((teclas.get(0).getPosX() / teclas.get(0).getBase()) == 0) {
+                    soundPool.play(idUno, 1, 1, 0, 0, 1);
+                }
+                else if ((teclas.get(0).getPosX() / teclas.get(0).getBase()) == 1) {
+                    soundPool.play(idDos, 1, 1, 0, 0, 1);
+                }
+                else if ((teclas.get(0).getPosX() / teclas.get(0).getBase()) == 2) {
+                    soundPool.play(idTres, 1, 1, 0, 0, 1);
+                }
+                else if ((teclas.get(0).getPosX() / teclas.get(0).getBase()) == 3) {
+                    soundPool.play(idCuatro, 1, 1, 0, 0, 1);
+                }
                 teclas.remove(0);
                 hilos.get(0).setRunning(false);
                 hilos.remove(0);
@@ -154,19 +180,20 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
         else {
+            hiloPiano.setRunning(false);
+
             getContext().startActivity(new Intent(getContext(), MainActivity.class));
 
-            juegoView.finish();
+            ((JuegoView) getContext()).finish();
         }
 
         return false;
     }
 
     public void pararJuego() {
-        hiloPiano.setRunning(false);
-
         for (int j = 0; j < hilos.size(); j++) {
             hilos.get(j).setRunning(false);
         }
+        jugando = false;
     }
 }
