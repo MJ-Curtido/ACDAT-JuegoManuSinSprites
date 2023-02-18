@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mp = MediaPlayer.create(this, R.raw.menu);
         mp.setLooping(true);
-        mp.setVolume(0.5f, 0.5f);
+        mp.setVolume(0.3f, 0.3f);
         mp.start();
 
         binding.btnJugar.setOnClickListener(this);
@@ -38,13 +38,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnJugar:
                 mp.stop();
                 startActivity(new Intent(this, JuegoView.class));
-                finish();
                 break;
             case R.id.btnSalir:
                 mp.stop();
                 finish();
                 break;
             case R.id.btnHistorialPartidas:
+                startActivity(new Intent(this, HistorialView.class));
                 break;
         }
     }

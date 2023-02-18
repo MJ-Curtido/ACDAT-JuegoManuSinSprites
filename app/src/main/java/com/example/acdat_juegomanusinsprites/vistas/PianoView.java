@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -14,11 +15,15 @@ import android.view.SurfaceView;
 import androidx.annotation.NonNull;
 
 import com.example.acdat_juegomanusinsprites.R;
+import com.example.acdat_juegomanusinsprites.bbdd.DbHelper;
+import com.example.acdat_juegomanusinsprites.clases.Partida;
 import com.example.acdat_juegomanusinsprites.clases.TeclaPiano;
 import com.example.acdat_juegomanusinsprites.hilos.HiloPiano;
 import com.example.acdat_juegomanusinsprites.hilos.HiloTecla;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
     private HiloPiano hiloPiano;
@@ -31,6 +36,7 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
     private Boolean jugando;
     private SoundPool soundPool;
     private int idUno, idDos, idTres, idCuatro;
+    private DbHelper dbHelper;
 
     public PianoView(Context context) {
         super(context);
@@ -50,6 +56,7 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
         contPiezas = 0;
         puntuacion = 0;
         jugando = true;
+        dbHelper = new DbHelper(getContext());
 
         getHolder().addCallback(this);
         setBackgroundColor(Color.WHITE);
@@ -138,8 +145,11 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
         canvas.drawText(puntuacion + "", ((anchoPantalla / 2) - 60), 70, paint);
 
         if (!jugando) {
-            canvas.drawText("Has perdido :(", 250, (altoPantalla / 2), paint);
-            canvas.drawText("Pulse para volver", 100, ((altoPantalla / 2) + 60), paint);
+            canvas.drawText("Has perdido :(", (anchoPantalla / 2) - 250, (altoPantalla / 2), paint);
+            canvas.drawText("Pulse para volver", (anchoPantalla / 2) - 300, ((altoPantalla / 2) + 60), paint);
+
+            hiloPiano.setRunning(false);
+            hilos.remove(0);
         }
     }
 
@@ -180,7 +190,12 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
         else {
-            hiloPiano.setRunning(false);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                dbHelper.insertarPartida(new Partida(puntuacion + "", LocalDate.now().toString()));
+            }
+            else {
+                dbHelper.insertarPartida(new Partida(puntuacion + "", new Date().toString()));
+            }
 
             getContext().startActivity(new Intent(getContext(), MainActivity.class));
 

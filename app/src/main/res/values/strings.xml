@@ -3,4 +3,6 @@
     <string name="btnJugar">Jugar</string>
     <string name="btnSalir">Salir</string>
     <string name="btnHistorialPartidas">Historial de partidas</string>
+    <string name="lblHistorial">Historial de partidas</string>
+    <string name="btnVolverHistorial">Volver</string>
 </resources>
