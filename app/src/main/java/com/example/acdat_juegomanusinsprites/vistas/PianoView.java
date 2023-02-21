@@ -197,8 +197,6 @@ public class PianoView extends SurfaceView implements SurfaceHolder.Callback {
                 dbHelper.insertarPartida(new Partida(puntuacion + "", new Date().toString()));
             }
 
-            getContext().startActivity(new Intent(getContext(), MainActivity.class));
-
             ((JuegoView) getContext()).finish();
         }
 
